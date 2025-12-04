@@ -1,0 +1,269 @@
+@import "tailwindcss";
+
+/* Capacitor 앱을 위한 Safe Area Insets 적용 */
+:root {
+  --safe-area-inset-top: env(safe-area-inset-top, 0px);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-inset-left: env(safe-area-inset-left, 0px);
+  --safe-area-inset-right: env(safe-area-inset-right, 0px);
+  
+  /* 안드로이드 상태바 최소 높이 (일반적으로 24px) */
+  --status-bar-height: 24px;
+  
+  /* 갤럭시 시스템 네비게이션 바 높이 (일반적으로 48-56px) */
+  --android-navbar-height: 56px;
+  
+  /* 실제 사용할 안전한 상단 여백 (상태바 높이와 safe-area 중 큰 값) */
+  --safe-top-padding: max(var(--safe-area-inset-top), var(--status-bar-height));
+  
+  /* 실제 사용할 안전한 하단 여백 (시스템 네비게이션 바 높이와 safe-area 중 큰 값) */
+  /* CSS 변수에서는 max()를 직접 사용할 수 없으므로, 각 케이스에서 직접 계산 */
+}
+
+/* 기본 body 스타일 초기화 */
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* 전체 앱 컨테이너 - Safe Area 미적용 (헤더가 직접 관리) */
+#root {
+  min-height: 100vh;
+  background-color: #f9fafb;
+  /* 상단 패딩은 헤더가 관리하므로 제거 */
+  padding-top: 0;
+  padding-bottom: var(--safe-area-inset-bottom);
+  padding-left: var(--safe-area-inset-left);
+  padding-right: var(--safe-area-inset-right);
+}
+
+/* Capacitor 앱을 위한 추가 스타일 */
+.safe-area-container {
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+/* z-index 계층 구조 정의 */
+.z-45 {
+  z-index: 45;
+}
+
+/* 모바일 헤더 및 사이드바 스타일 */
+@media (max-width: 768px) {
+  /* 모바일 헤더 기본 스타일 - z-index 50 (최상위) */
+  .mobile-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    
+    /* 배경 및 테두리 */
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    
+    /* 기본 상단 Safe Area 적용 */
+    padding-top: var(--safe-area-inset-top);
+  }
+  
+  /* Capacitor 앱 전용 헤더 스타일 */
+  .mobile-header.capacitor-app {
+    padding-top: max(env(safe-area-inset-top, 0px), 24px);
+    background: rgba(255, 255, 255, 0.98);
+  }
+  
+  /* 안드로이드 전용 헤더 스타일 (더 강력한 보정) */
+  .mobile-header.android-app {
+    padding-top: max(env(safe-area-inset-top, 0px), 24px);
+    background: rgba(255, 255, 255, 0.98);
+  }
+  
+  /* 헤더 내부 콘텐츠 균형 조정 */
+  .mobile-header-content {
+    min-height: 3.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+  }
+  
+  /* 🔥 모바일 사이드바 - z-index 45 (헤더 아래) */
+  .mobile-sidebar {
+    /* 상단 Safe Area만큼 패딩 추가 */
+    padding-top: var(--safe-area-inset-top);
+  }
+  
+  /* Capacitor/Android 앱의 사이드바 */
+  .mobile-sidebar.capacitor-app,
+  .mobile-sidebar.android-app {
+    padding-top: max(env(safe-area-inset-top, 0px), 24px);
+  }
+  
+  /* 사이드바 헤더 영역 */
+  .mobile-sidebar-header {
+    /* Safe Area 패딩이 이미 부모에 적용되어 있으므로 추가 패딩 불필요 */
+    min-height: 4rem;
+    display: flex;
+    align-items: center;
+  }
+  
+  /* 모바일 콘텐츠 영역 - 헤더 높이만큼 여백 추가 */
+  .mobile-content {
+    /* 헤더 높이(3.5rem) + Safe Area + 추가 여백 */
+    padding-top: calc(var(--safe-top-padding) + 3.5rem + 0.5rem);
+    /* 하단 네비게이션 바 높이(4rem) + Safe Area + 추가 여백 */
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 5rem);
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  /* Capacitor 앱에서 콘텐츠 영역 조정 */
+  .capacitor-app .mobile-content,
+  body.capacitor-app .mobile-content {
+    padding-top: calc(max(env(safe-area-inset-top, 0px), 24px) + 3.5rem + 0.5rem);
+    /* 하단 네비게이션 바 + Safe Area */
+    padding-bottom: calc(max(env(safe-area-inset-bottom, 0px), 12px) + 4rem + 0.5rem);
+  }
+  
+  /* 안드로이드 앱에서 콘텐츠 영역 조정 - 정규 방식 */
+  .android-app .mobile-content,
+  body.android-app .mobile-content {
+    padding-top: calc(max(env(safe-area-inset-top, 0px), 24px) + 3.5rem + 0.5rem);
+    /* 하단 네비게이션 바 전체 높이: 4rem (64px) + padding-bottom (max(env(safe-area-inset-bottom, 0px), 56px) + 12px)
+     * 본문 영역은 하단 네비게이션 바의 전체 높이만큼 패딩
+     */
+    padding-bottom: calc(4rem + max(env(safe-area-inset-bottom, 0px), 56px) + 12px) !important;
+  }
+  
+  /* 안드로이드 앱 main 태그에도 직접 적용 */
+  body.android-app main.mobile-content {
+    padding-bottom: calc(4rem + max(env(safe-area-inset-bottom, 0px), 56px) + 12px) !important;
+  }
+  
+  /* 하단 네비게이션 바 기본 스타일 */
+  .mobile-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    
+    /* 배경 및 테두리 */
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 -1px 3px 0 rgba(0, 0, 0, 0.1), 0 -1px 2px 0 rgba(0, 0, 0, 0.06);
+    
+    /* 기본 하단 Safe Area 적용 */
+    padding-bottom: var(--safe-area-inset-bottom);
+  }
+  
+  /* Capacitor 앱 하단 네비게이션 */
+  .capacitor-app .mobile-bottom-nav,
+  body.capacitor-app .mobile-bottom-nav {
+    padding-bottom: max(env(safe-area-inset-bottom, 0px), 12px);
+    background: rgba(255, 255, 255, 0.98);
+  }
+  
+  /* 안드로이드 하단 네비게이션 - 정규 방식: padding-bottom으로 채우면서 올리기 */
+  .android-app .mobile-bottom-nav,
+  body.android-app .mobile-bottom-nav {
+    /* 정규 방식: bottom은 0으로 두고, padding-bottom으로 시스템 네비게이션 바를 피함
+     * 하단 네비게이션 바는 화면 하단에 붙어있지만, 내부 패딩으로 시스템 네비게이션 바 위에 콘텐츠 배치
+     */
+    bottom: 0;
+    padding-bottom: calc(max(env(safe-area-inset-bottom, 0px), 56px) + 12px);
+    background: rgba(255, 255, 255, 0.98);
+  }
+}
+
+/* 데스크톱에서는 Safe Area 무시 */
+@media (min-width: 769px) {
+  #root {
+    padding: 0;
+  }
+}
+
+/* 풀스크린 모드 대응 */
+.fullscreen-mode {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.fullscreen-mode .mobile-header,
+.fullscreen-mode .mobile-bottom-nav,
+.fullscreen-mode .mobile-sidebar {
+  display: none !important;
+}
+
+/* 스크롤 개선 */
+* {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 터치 액션 최적화 */
+button, a, [role="button"] {
+  touch-action: manipulation;
+}
+
+/* 🔥 추가: 노치/펀치홀이 있는 기기 대응 */
+@supports (padding: max(0px)) {
+  @media (max-width: 768px) {
+    .mobile-header {
+      /* iOS와 안드로이드 모두 대응 */
+      padding-top: max(env(safe-area-inset-top), 24px);
+    }
+    
+    .mobile-header.capacitor-app,
+    .mobile-header.android-app {
+      /* Capacitor/Android 앱에서 더 확실한 여백 */
+      padding-top: max(env(safe-area-inset-top), 28px);
+    }
+    
+    /* 사이드바도 동일하게 */
+    .mobile-sidebar.capacitor-app,
+    .mobile-sidebar.android-app {
+      padding-top: max(env(safe-area-inset-top), 28px);
+    }
+  }
+}
+
+/* 🔥 추가: 특정 기기별 추가 보정 */
+/* 갤럭시 폴드, S 시리즈 등 노치가 큰 기기 */
+@media (max-width: 768px) and (min-height: 700px) {
+  .mobile-header.android-app {
+    padding-top: max(env(safe-area-inset-top), 32px);
+  }
+  
+  .mobile-sidebar.android-app {
+    padding-top: max(env(safe-area-inset-top), 32px);
+  }
+  
+  .android-app .mobile-content,
+  body.android-app .mobile-content {
+    padding-top: calc(max(env(safe-area-inset-top, 0px), 32px) + 3.5rem + 0.5rem);
+  }
+}
+
+/* 🔥 헤더가 고정된 페이지의 콘텐츠 조정 */
+.has-fixed-header {
+  padding-top: 0 !important;
+}
+
+@media (max-width: 768px) {
+  .has-fixed-header .mobile-content {
+    padding-top: calc(var(--safe-top-padding) + 3.5rem + 0.5rem) !important;
+  }
+  
+  .capacitor-app.has-fixed-header .mobile-content,
+  .android-app.has-fixed-header .mobile-content {
+    padding-top: calc(max(env(safe-area-inset-top, 0px), 28px) + 3.5rem + 0.5rem) !important;
+  }
+}

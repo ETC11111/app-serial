@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    
+    <!-- 파비콘 설정 -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    
+    <!-- PWA 지원 -->
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#2563EB" />
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="capacitor" content="true" />
+    <title>SERIALlogger</title>
+    
+    <!-- Capacitor 스크립트 (조건부 로드) -->
+    <script>
+      // Capacitor 앱 감지 (Capacitor가 로드되지 않은 경우를 대비)
+      function detectCapacitorApp() {
+        try {
+          // Capacitor가 로드된 경우
+          if (window.Capacitor) {
+            if (window.Capacitor.isNativePlatform()) {
+              document.body.classList.add('capacitor-app');
+              if (window.Capacitor.getPlatform() === 'android') {
+                document.body.classList.add('android-app');
+              }
+            }
+          } else {
+            // Capacitor가 로드되지 않은 경우 대체 감지
+            const isCapacitor = !!(window.Capacitor) || 
+                               !!(window.cordova) || 
+                               navigator.userAgent.includes('Capacitor') ||
+                               !!document.querySelector('meta[name="capacitor"]');
+            
+            if (isCapacitor) {
+              document.body.classList.add('capacitor-app');
+              
+              const isAndroid = navigator.userAgent.includes('Android') ||
+                               navigator.userAgent.includes('android') ||
+                               /Android/i.test(navigator.userAgent);
+              
+              if (isAndroid) {
+                document.body.classList.add('android-app');
+              }
+            }
+          }
+        } catch (error) {
+          console.log('Capacitor 감지 중 오류:', error);
+        }
+      }
+      
+      // DOM 로드 후 실행
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', detectCapacitorApp);
+      } else {
+        detectCapacitorApp();
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
